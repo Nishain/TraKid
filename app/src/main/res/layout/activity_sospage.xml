@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorAccent"
+    tools:context=".SOSPage">
+
+    <com.skyfishjy.library.RippleBackground
+        android:id="@+id/sos_ripple_effect"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        app:rb_color="@android:color/white"
+        app:rb_strokeWidth="16dp"
+        app:rb_type="strokeRipple"
+        app:rb_duration="6000"
+        app:rb_rippleAmount="12">
+
+    </com.skyfishjy.library.RippleBackground>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="You have recieved an SOS call"
+            android:textColor="@android:color/white"
+            android:textSize="30sp" />
+
+        <ImageView
+            android:id="@+id/sosIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@drawable/white_bubble"
+            app:srcCompat="@drawable/sos" />
+
+        <Button
+            android:id="@+id/button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/sos_show_location_btn"
+            android:padding="12dp"
+            android:text="show Location"
+            android:textColor="@android:color/holo_red_light" />
+    </LinearLayout>
+
+
+</FrameLayout>

@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">TraKid Home</string>
+    <string name="sharedPreferenceName">settingsParameters</string>
+    <string name="no_internet_message">No Internet connectivity but you will receive SOS calls</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="reportSetting1">The maximum speed which target will travel which will be considered into the report.</string>
+    <string name="reportSetting2">Number of times target continue on this speed before add it to report.</string>
+    <string name="reportSetting3">maximum wait time before adding to report</string>
+    <string name="maxSpeedThreshold">maxSpeedThreshold,f,15</string>
+    <string name="minWaitingTime">minWaitingTime,i,2</string>
+</resources>
