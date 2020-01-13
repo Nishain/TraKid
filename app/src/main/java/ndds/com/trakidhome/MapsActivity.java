@@ -32,30 +32,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private MapFunctionalityHandler mapFunctionalityHandler;
     private InternetChangeListener internetChangeListener;
 
-    ArrayList<Integer> timeStamps = new ArrayList<>();
-
-    ArrayList<LatLng> coordinates = new ArrayList<>();
-
 
 
     public void setDummyValues(){
-        timeStamps.add(12);
-        timeStamps.add(13);
-        timeStamps.add(14);
-        timeStamps.add(15);
-        timeStamps.add(19);
-        timeStamps.add(20);
-        timeStamps.add(21);
-
-        coordinates.add(new LatLng(6.839241, 79.964737));
-        coordinates.add(new LatLng(6.839100, 79.964715));
-        coordinates.add(new LatLng(6.839105, 79.964720));
-        coordinates.add(new LatLng(6.839096, 79.964725));
-        coordinates.add(new LatLng(6.838786, 79.964810));
-        coordinates.add(new LatLng(6.838634, 79.964306));
-        coordinates.add(new LatLng(6.839135, 79.964813));
-
-
+        SQLIteDataHandler data = new SQLIteDataHandler(this);
+        data.truncateTable(); //remove previous data
+        data.insertNewCoordinateInfo(6.839241, 79.964737, 12);
+        data.insertNewCoordinateInfo(6.839100, 79.964715, 13);
+        data.insertNewCoordinateInfo(6.839105, 79.964720, 14);
+        data.insertNewCoordinateInfo(6.839096, 79.964725, 15);
+        data.insertNewCoordinateInfo(6.838786, 79.964810, 19);
+        data.insertNewCoordinateInfo(6.838634, 79.964306, 20);
+        data.insertNewCoordinateInfo(6.839135, 79.964813, 21);
     }
     private void initializeChildSelectorWindow(){
         final ArrayList<String> children =new ArrayList<>();
@@ -100,9 +88,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         registerReceiver(internetChangeListener, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
     }
     public void showReport(View v){
-        startActivity(new Intent(this,ReportPage.class).
-                putExtra("coordinates",coordinates).
-                putExtra("timestamps",timeStamps));
+        startActivity(new Intent(this, ReportPage.class));
     }
 
     public void showSOS(View v){
@@ -156,13 +142,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        mapFunctionalityHandler=new MapFunctionalityHandler(mMap,coordinates,timeStamps);
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(6.839241, 79.964737);
-
+        mapFunctionalityHandler = new MapFunctionalityHandler(mMap, this)
+                .setMaximumTimeInterval(1)//if time gap greater than this interval if will be reported to report
+                .setColors(
+                        getColor(R.color.appThemeLight),
+                        getColor(R.color.appThemeNormal),
+                        getColor(R.color.appThemeDark),
+                        getColor(R.color.appThemeError)
+                );
+        SQLIteDataHandler dataHandler = new SQLIteDataHandler(this);
         mapFunctionalityHandler.addMapRoute();
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney,19));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(dataHandler.getCoordinates(dataHandler.getSize() - 1), 19));
 
         if(getIntent().hasExtra("showReport")){
             ArrayList<LatLng> positions = getIntent().getParcelableArrayListExtra("stopCoordinates");

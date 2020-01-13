@@ -23,13 +23,10 @@ public class ReportPage extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_report_page);
-        coordinates = getIntent().getParcelableArrayListExtra("coordinates");
-        timestamps = getIntent().getIntegerArrayListExtra("timestamps");
         TextView reportText = findViewById(R.id.report_text);
         SharedPrefernceManager sharedPrefernceManager=new SharedPrefernceManager(this);
         speedAnalysisReport=new SpeedAnalysisReport(
-                timestamps.toArray(new Integer[0]),
-                coordinates.toArray(new LatLng[0]),
+                this,
                 (float) sharedPrefernceManager.getValue(R.string.maxSpeedThreshold),
                 Math.round((int) sharedPrefernceManager.getValue(R.string.minWaitingTime))
                 );

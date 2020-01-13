@@ -15,16 +15,15 @@ import java.util.List;
 import java.util.Locale;
 
 public class SpeedAnalysisReport {
-    private Integer[] timestamps;
-    private LatLng[] coordinates;
+
+    private final SQLIteDataHandler data;
     private float highSpeedThereshold;
     private int maxWaitingTime;
     ArrayList<LatLng> stopCoordinates;
     ArrayList<Integer> highSpeedTimes;
 
-    public SpeedAnalysisReport(Integer[] timestamps, LatLng[] coordinates, float highSpeedThereshold, int maxWaitingTime) {
-        this.timestamps = timestamps;
-        this.coordinates = coordinates;
+    public SpeedAnalysisReport(Context context, float highSpeedThereshold, int maxWaitingTime) {
+        data = new SQLIteDataHandler(context);
         this.highSpeedThereshold = highSpeedThereshold;
         this.maxWaitingTime = maxWaitingTime;
     }
@@ -52,22 +51,22 @@ public class SpeedAnalysisReport {
         LatLng stopCoordinate = null;
         String report = "";
         boolean b;
-        for (int i = 0; i < timestamps.length; i++) {
-            if(i!=timestamps.length-1) {
-                speed = distanceMoved(coordinates[i], coordinates[i + 1]) / (timestamps[i + 1] - timestamps[i]);
+        for (int i = 0; i < data.getSize(); i++) {
+            if (i != data.getSize() - 1) {
+                speed = distanceMoved(data.getCoordinates(i), data.getCoordinates(i + 1)) / (data.getTimeStamps(i + 1) - data.getTimeStamps(i));
                 if (a = speed > highSpeedThereshold) {
                     if (timesInHighSpeed == 0) {
-                        startPosition = coordinates[i];
-                        startTime = timestamps[i];
+                        startPosition = data.getCoordinates(i);
+                        startTime = data.getTimeStamps(i);
                         timestampIndex = i;
                     }
                     timesInHighSpeed++;
                 }
                 if(!isWaiting) {
-                    stopCoordinate = coordinates[i];
-                    startWaitTime = timestamps[i];
+                    stopCoordinate = data.getCoordinates(i);
+                    startWaitTime = data.getTimeStamps(i);
                 }
-                if (b = distanceMoved(stopCoordinate, coordinates[i + 1]) < 10) {
+                if (b = distanceMoved(stopCoordinate, data.getCoordinates(i + 1)) < 10) {
                     isWaiting=true;
                 }
             }else
@@ -75,16 +74,16 @@ public class SpeedAnalysisReport {
             if (!a && timesInHighSpeed > 1) {
                 highSpeedTimes.add(timestampIndex);
                 highSpeedTimes.add(i);
-                String placeName=getLocationAddress(coordinates[i],geocoder);
+                String placeName = getLocationAddress(data.getCoordinates(i), geocoder);
                 report += String.format("\u2022 At time %d user move away%s by %.2f m until time %d\n",
-                        startTime,placeName!=null?" to "+placeName:"",distanceMoved(startPosition,coordinates[i]),timestamps[i]);
+                        startTime, placeName != null ? " to " + placeName : "", distanceMoved(startPosition, data.getCoordinates(i)), data.getTimeStamps(i));
             }
             if (!a)
                 timesInHighSpeed = 0;
 
-            if (!b && isWaiting && (timestamps[i]-startWaitTime)>=maxWaitingTime) {
-                String placeName = getLocationAddress(coordinates[i], geocoder);
-                report += String.format("\u2022 at time %d user waited%s %d min\n",startWaitTime,placeName!=null?" on "+placeName+" for":"",timestamps[i] - startWaitTime);
+            if (!b && isWaiting && (data.getTimeStamps(i) - startWaitTime) >= maxWaitingTime) {
+                String placeName = getLocationAddress(data.getCoordinates(i), geocoder);
+                report += String.format("\u2022 at time %d user waited%s %d min\n", startWaitTime, placeName != null ? " on " + placeName + " for" : "", data.getTimeStamps(i) - startWaitTime);
                 stopCoordinates.add(stopCoordinate);
             }
             if (!b)
