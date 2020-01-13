@@ -1,13 +1,19 @@
 package ndds.com.trakidhome;
 
 import android.app.AlertDialog;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -18,6 +24,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -130,6 +137,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
+    private void showLegend() {
+        LinearLayout layout = findViewById(R.id.mapLegendContainer);
+        HashMap<String, Integer> hashMap = new HashMap<>();
+        hashMap.put("Long distance travel", R.color.appThemeLight);
+        hashMap.put("Normal", R.color.appThemeNormal);
+        hashMap.put("route missed coordinates", R.color.appThemeError);
+        hashMap.put("circle - waited stop", R.color.appThemeDark);
+        LayoutInflater inflater = getLayoutInflater();
+        Resources resources = getResources();
+        ViewGroup group;
+        for (String label : hashMap.keySet()) {
+            group = (ViewGroup) inflater.inflate(R.layout.map_legend_view, null);
+            ((TextView) group.getChildAt(0)).setText(label);
+            group.getChildAt(1).setBackgroundColor(resources.getColor(hashMap.get(label)));
+            layout.addView(group);
+        }
+
+
+    }
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
@@ -142,13 +168,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        showLegend();
         mapFunctionalityHandler = new MapFunctionalityHandler(mMap, this)
                 .setMaximumTimeInterval(1)//if time gap greater than this interval if will be reported to report
                 .setColors(
-                        getColor(R.color.appThemeLight),
-                        getColor(R.color.appThemeNormal),
-                        getColor(R.color.appThemeDark),
-                        getColor(R.color.appThemeError)
+                        getResources().getColor(R.color.appThemeLight),
+                        getResources().getColor(R.color.appThemeNormal),
+                        getResources().getColor(R.color.appThemeDark),
+                        getResources().getColor(R.color.appThemeError)
                 );
         SQLIteDataHandler dataHandler = new SQLIteDataHandler(this);
         mapFunctionalityHandler.addMapRoute();
