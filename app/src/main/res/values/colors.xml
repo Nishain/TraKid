@@ -2,9 +2,9 @@
 <resources>
     <color name="appTheme">#219fee</color>
     <color name="appThemeNormal">#212fee</color>
-    <color name="appThemeLight">#92d4fd</color>
-    <color name="appThemeDark">#265f83</color>
-    <color name="appThemeError">#b421ee</color>
+    <color name="appThemeLight">#6cf95d</color>
+    <color name="appThemeDark">#e6ae08</color>
+    <color name="appThemeError">#ee2147</color>
     <color name="appThemeSelection">#3582b3</color>
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>

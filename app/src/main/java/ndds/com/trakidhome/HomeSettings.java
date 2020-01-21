@@ -23,6 +23,7 @@ public class HomeSettings extends AppCompatActivity {
     private LinearLayout settingContainer;
     int[] settingKeys={
             R.string.maxSpeedThreshold,
+            R.string.minFrequencyInHighSpeed,
             R.string.minWaitingTime
     };
     private SharedPrefernceManager sharedPrefernceManager;
@@ -36,7 +37,7 @@ public class HomeSettings extends AppCompatActivity {
         addSettingTitle("Reporting");
         setInitialValues(new EditText[]{
             addSetting(R.string.reportSetting1, InputType.TYPE_CLASS_NUMBER),
-            //addSetting(R.string.reportSetting2,InputType.TYPE_NUMBER_FLAG_DECIMAL);
+                addSetting(R.string.reportSetting2, InputType.TYPE_CLASS_NUMBER),
             addSetting(R.string.reportSetting3, InputType.TYPE_CLASS_NUMBER)
         });
 

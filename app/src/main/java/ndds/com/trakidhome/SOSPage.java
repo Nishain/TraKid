@@ -17,6 +17,9 @@ public class SOSPage extends AppCompatActivity {
         setContentView(R.layout.activity_sospage);
         //sosView.setText(getIntent().getStringExtra("message"));
         ((RippleBackground)findViewById(R.id.sos_ripple_effect)).startRippleAnimation();
+        TextView header = findViewById(R.id.SOSHeaderTitle);
+        if (getIntent().hasExtra("name"))
+            header.setText(header.getText() + " from " + getIntent().getStringExtra("name"));
     }
 
     @Override

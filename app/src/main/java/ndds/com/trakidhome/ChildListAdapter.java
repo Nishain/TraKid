@@ -12,12 +12,13 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 public abstract class ChildListAdapter extends RecyclerView.Adapter<ChildListAdapter.ChildViewHolder> implements View.OnClickListener {
-    private ArrayList<String> childrens;
+    private ArrayList<String> children;
     private int itemSelectedColor;
     private int normalColor;
-    private int indexOfClickedItem=0;
-    public ChildListAdapter(ArrayList<String> childrens, int itemSelectedColor, int normalColor) {
-        this.childrens = childrens;
+    private int indexOfClickedItem = 1;
+
+    public ChildListAdapter(ArrayList<String> children, int itemSelectedColor, int normalColor) {
+        this.children = children;
         this.itemSelectedColor = itemSelectedColor;
         this.normalColor = normalColor;
     }
@@ -26,6 +27,11 @@ public abstract class ChildListAdapter extends RecyclerView.Adapter<ChildListAda
     @Override
     public void onClick(View v) {
 
+        if ((int) v.getTag() == 0) {
+            //don't update when + button clicked
+            onItemClicked(0);
+            return;
+        }
         int prev=indexOfClickedItem;
         indexOfClickedItem = (int) v.getTag();
         notifyItemChanged(prev);
@@ -58,13 +64,13 @@ public abstract class ChildListAdapter extends RecyclerView.Adapter<ChildListAda
 
     @Override
     public void onBindViewHolder(@NonNull ChildViewHolder holder, int position) {
-        ((TextView)holder.itemView).setText(childrens.get(position));
+        ((TextView) holder.itemView).setText(children.get(position));
         holder.itemView.setTag(position);
         holder.itemView.setOnClickListener(this);
         setSelectedItemDarker(holder.itemView,position==indexOfClickedItem);
     }
     @Override
     public int getItemCount() {
-        return childrens.size();
+        return children.size();
     }
 }

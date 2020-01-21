@@ -18,34 +18,67 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:background="@drawable/home_drawer"
-        android:orientation="horizontal"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp">
+        android:orientation="vertical">
 
-        <Button
-            android:id="@+id/home_settings"
+        <LinearLayout
+            android:background="@android:color/white"
+            android:padding="10dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="20dp"
-            android:background="@drawable/settings"
-            android:onClick="showSettings" />
+            android:layout_gravity="end|bottom"
+            android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/home_notifications"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="20dp"
-            android:background="@drawable/bell"
-            android:onClick="showReport" />
+            <Switch
+                android:id="@+id/routeDotToggleSwitch"
+                style="@style/AppTheme"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="false"
+                android:text="show Route" />
 
-        <Button
-            android:id="@+id/home_help"
-            android:layout_width="wrap_content"
+            <ImageView
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:onClick="onRefreshClicked"
+                android:scaleType="fitCenter"
+                android:src="@drawable/refresh"
+                android:text="Refresh" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="20dp"
-            android:background="@drawable/help"
-            android:onClick="showHelp" />
+            android:layout_gravity="bottom"
+            android:background="@drawable/home_drawer"
+            android:orientation="horizontal"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp">
+
+            <Button
+                android:id="@+id/home_settings"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                android:background="@drawable/settings"
+                android:onClick="showSettings" />
+
+            <Button
+                android:id="@+id/home_notifications"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                android:background="@drawable/bell"
+                android:onClick="showReport" />
+
+            <Button
+                android:id="@+id/home_help"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                android:background="@drawable/help"
+                android:onClick="showHelp" />
+        </LinearLayout>
+
     </LinearLayout>
 
     <LinearLayout

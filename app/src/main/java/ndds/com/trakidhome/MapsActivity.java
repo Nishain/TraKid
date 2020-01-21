@@ -1,31 +1,27 @@
 package ndds.com.trakidhome;
 
 import android.app.AlertDialog;
-import android.content.ContentValues;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
+import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.LinearLayout;
-import android.widget.TextView;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
+import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
@@ -38,12 +34,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap mMap;
     private MapFunctionalityHandler mapFunctionalityHandler;
     private InternetChangeListener internetChangeListener;
+    private boolean isDisplayRoute;
+    private int reportRequestCode = 456;
 
-
-
+    public void setDummyChildren() {
+        SQLiteChildDataHandler data = new SQLiteChildDataHandler(this);
+        data.insertNewChild(423, "Nishain", "0770665281");
+    }
     public void setDummyValues(){
-        SQLIteDataHandler data = new SQLIteDataHandler(this);
-        data.truncateTable(); //remove previous data
+        SQLIteLocationDataHandler data = new SQLIteLocationDataHandler(this);
         data.insertNewCoordinateInfo(6.839241, 79.964737, 12);
         data.insertNewCoordinateInfo(6.839100, 79.964715, 13);
         data.insertNewCoordinateInfo(6.839105, 79.964720, 14);
@@ -54,15 +53,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
     private void initializeChildSelectorWindow(){
         final ArrayList<String> children =new ArrayList<>();
-        children.add("Nishain");
-        children.add("Ashain");
-        children.add("Kasum");
-        children.add("pasan");
-        children.add("suri");
-        children.add("lasan");
-        children.add("garuka");
-        children.add("navith");
-        children.add("hero");
+        children.add("+");
+        SQLiteChildDataHandler data = new SQLiteChildDataHandler(this);
+        Cursor childrenCursor = data.getCursor();
+        while (childrenCursor.moveToNext()) {
+            children.add(childrenCursor.getString(1));
+        }
         RecyclerView recyclerView=findViewById(R.id.childSelector);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext(),RecyclerView.HORIZONTAL,false);
         recyclerView.setLayoutManager(mLayoutManager);
@@ -70,7 +66,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         recyclerView.setAdapter(new ChildListAdapter(children,getResources().getColor(R.color.appThemeSelection), getResources().getColor(R.color.appTheme)) {
             @Override
             public void onItemClicked(int position) {
-                Toast.makeText(MapsActivity.this, "item "+children.get(position)+" clicked", Toast.LENGTH_SHORT).show();
+                if (position > 0)
+                    onChildChange(position, -1);
             }
         });
     }
@@ -78,14 +75,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-        setDummyValues();
-        initializeChildSelectorWindow();
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         checkAndRequestPermissions();
-        //startService(new Intent(this,SOSSMSListener.class));
+        Switch s = findViewById(R.id.routeDotToggleSwitch);
+        s.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                buttonView.setText(isChecked ? "show Dots" : "show Route");
+                onRouteModeToggle();
+            }
+        });
     }
 
     @Override
@@ -95,11 +97,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         registerReceiver(internetChangeListener, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
     }
     public void showReport(View v){
-        startActivity(new Intent(this, ReportPage.class));
-    }
-
-    public void showSOS(View v){
-        startActivity(new Intent(this,SOSPage.class));
+        if (mapFunctionalityHandler == null)
+            return;
+        Toast.makeText(this, "hold on..", Toast.LENGTH_SHORT).show();
+        startActivityForResult(new Intent(this, ReportPage.class)
+                .putExtra("report", mapFunctionalityHandler.getSpeedAnalysisReport().makeReport()), reportRequestCode);
     }
     @Override
     protected void onPause() {
@@ -110,6 +112,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         startActivity(new Intent(this,HomeSettings.class));
     }
 
+    public void onRefreshClicked(View v) {
+        refreshMap();
+    }
+
+    public void onToggleViewClicked(View v) {
+        onRouteModeToggle();
+    }
     private void checkAndRequestPermissions(){
         PackageInfo info = null;
         try {
@@ -133,28 +142,57 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .show();
     }
 
-    public void showHelp(){
-
+    public void onCoordinatesAdded() {
+        SQLIteLocationDataHandler dataHandler = new SQLIteLocationDataHandler(this);
+        dataHandler.truncateTable();
+        setDummyValues();//for now :)
+        refreshMap();
     }
 
-    private void showLegend() {
-        LinearLayout layout = findViewById(R.id.mapLegendContainer);
-        HashMap<String, Integer> hashMap = new HashMap<>();
-        hashMap.put("Long distance travel", R.color.appThemeLight);
-        hashMap.put("Normal", R.color.appThemeNormal);
-        hashMap.put("route missed coordinates", R.color.appThemeError);
-        hashMap.put("circle - waited stop", R.color.appThemeDark);
-        LayoutInflater inflater = getLayoutInflater();
-        Resources resources = getResources();
-        ViewGroup group;
-        for (String label : hashMap.keySet()) {
-            group = (ViewGroup) inflater.inflate(R.layout.map_legend_view, null);
-            ((TextView) group.getChildAt(0)).setText(label);
-            group.getChildAt(1).setBackgroundColor(resources.getColor(hashMap.get(label)));
-            layout.addView(group);
-        }
+    public void onChildrenAdded() {
+        SQLiteChildDataHandler dataHandler = new SQLiteChildDataHandler(this);
+        dataHandler.truncateTable();
+        setDummyChildren();//for now :>
+        initializeChildSelectorWindow();
+    }
 
+    public void onSingleCoordinateAdded(double latitude, double longitude, int timestamp) {
+        SQLIteLocationDataHandler dataHandler = new SQLIteLocationDataHandler(this);
+        dataHandler.insertNewCoordinateInfo(latitude, longitude, timestamp);
+        mapFunctionalityHandler.addSingleCoordinate(isDisplayRoute);
+    }
 
+    public void onRouteModeToggle() {
+        isDisplayRoute = !isDisplayRoute;
+        refreshMap();
+    }
+
+    public void onChildAdded(int childID, String firstName, String phonenumber) {
+        SQLiteChildDataHandler dataHandler = new SQLiteChildDataHandler(this);
+        dataHandler.insertNewChild(childID, firstName, phonenumber);
+        //add code for updating location infoTable..
+        refreshMap();
+    }
+
+    public void onChildChange(int position, int positionOffset) {
+        int rawPosition = position + positionOffset;
+        SQLiteChildDataHandler dataHandler = new SQLiteChildDataHandler(this);
+        Cursor c = dataHandler.getCursor();
+        c.moveToPosition(rawPosition);
+        String childID = c.getString(0);
+        //update table according to the childID
+    }
+
+    public void onInitFirstTime() {
+        onChildrenAdded();
+        onCoordinatesAdded();
+        refreshMap();
+        mapFunctionalityHandler.adjustCamera();
+    }
+
+    public void refreshMap() {
+        if (mapFunctionalityHandler != null)
+            mapFunctionalityHandler.refreshMap(isDisplayRoute);
     }
     /**
      * Manipulates the map once available.
@@ -168,7 +206,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        showLegend();
         mapFunctionalityHandler = new MapFunctionalityHandler(mMap, this)
                 .setMaximumTimeInterval(1)//if time gap greater than this interval if will be reported to report
                 .setColors(
@@ -177,15 +214,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         getResources().getColor(R.color.appThemeDark),
                         getResources().getColor(R.color.appThemeError)
                 );
-        SQLIteDataHandler dataHandler = new SQLIteDataHandler(this);
-        mapFunctionalityHandler.addMapRoute();
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(dataHandler.getCoordinates(dataHandler.getSize() - 1), 19));
+        mapFunctionalityHandler.showLegend((LinearLayout) findViewById(R.id.mapLegendContainer));
+        mapFunctionalityHandler.refreshMap(isDisplayRoute);
+        onInitFirstTime();
+    }
 
-        if(getIntent().hasExtra("showReport")){
-            ArrayList<LatLng> positions = getIntent().getParcelableArrayListExtra("stopCoordinates");
-            mapFunctionalityHandler.showStopsInMap(positions);//highSpeedTerminals
-            ArrayList<Integer> highSpeedTerminals = getIntent().getIntegerArrayListExtra("highSpeedTerminals");
-            mapFunctionalityHandler.showHighSpeedInMap(highSpeedTerminals);
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode == reportRequestCode && resultCode == RESULT_OK) {
+            if (!isDisplayRoute)
+                onRouteModeToggle();
+            mapFunctionalityHandler.showStopsInMap();//highSpeedTerminals
+            mapFunctionalityHandler.showHighSpeedInMap();
         }
     }
 }
