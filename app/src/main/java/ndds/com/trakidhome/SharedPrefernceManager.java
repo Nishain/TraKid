@@ -5,6 +5,10 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 public class SharedPrefernceManager {
     private Context context;
     private SharedPreferences sharedPreferences;
@@ -12,7 +16,32 @@ public class SharedPrefernceManager {
     public SharedPrefernceManager(Context context) {
         this.context = context;
         this.sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+    }
 
+    public boolean isDataRecordedOnSameDay() {
+        String currentDate = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date());
+        boolean isSameDay = currentDate.equals(sharedPreferences.getString("visitedDate", currentDate));
+        sharedPreferences.edit().putString("visitedDate", currentDate).apply();
+        return isSameDay;
+    }
+
+    public String getCurrentUserEmail() {
+        return sharedPreferences.getString("userEmail", null);
+    }
+
+    public void setUserEmail(String newEmail) {
+        sharedPreferences.edit().putString("userEmail", newEmail).apply();
+
+    }
+
+    public int isPreviousUserLogged(String nowUID) {
+        String previousUID = sharedPreferences.getString("previousUID", null);
+        if (previousUID == null)
+            return 0;
+        if (nowUID.equals(previousUID))
+            return 1;
+        else
+            return -1;
     }
     public Object getValue(int field){
         String fieldName=context.getString(field).split(",")[0];

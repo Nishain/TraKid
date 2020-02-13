@@ -7,10 +7,10 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
 public class InternetChangeListener extends BroadcastReceiver {
-    private MapsActivity mapsActivity;
+    private MainActivity mainActivity;
 
-    public InternetChangeListener(MapsActivity mapsActivity) {
-        this.mapsActivity = mapsActivity;
+    public InternetChangeListener(MainActivity mainActivity) {
+        this.mainActivity = mainActivity;
     }
     public  InternetChangeListener(){
         super();
@@ -19,7 +19,7 @@ public class InternetChangeListener extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         ConnectivityManager cm= (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo=cm.getActiveNetworkInfo();
-        mapsActivity.onNetworkAvailabilityChange(networkInfo!=null && networkInfo.isConnected());
+        mainActivity.onNetworkAvailabilityChange(networkInfo != null && networkInfo.isConnected());
 
     }
 }

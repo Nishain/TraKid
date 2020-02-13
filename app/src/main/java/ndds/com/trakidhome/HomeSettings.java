@@ -2,30 +2,20 @@ package ndds.com.trakidhome;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.SharedPreferences;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.InputType;
-import android.util.Log;
+import android.util.SparseIntArray;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.TableRow;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.w3c.dom.Text;
-
-import java.util.Map;
-
 public class HomeSettings extends AppCompatActivity {
 
-    private LinearLayout settingContainer;
-    int[] settingKeys={
-            R.string.maxSpeedThreshold,
-            R.string.minFrequencyInHighSpeed,
-            R.string.minWaitingTime
-    };
     private SharedPrefernceManager sharedPrefernceManager;
 
     @Override
@@ -33,44 +23,41 @@ public class HomeSettings extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_settings);
         sharedPrefernceManager=new SharedPrefernceManager(this);
-        settingContainer = findViewById(R.id.settings_container);
-        addSettingTitle("Reporting");
-        setInitialValues(new EditText[]{
-            addSetting(R.string.reportSetting1, InputType.TYPE_CLASS_NUMBER),
-                addSetting(R.string.reportSetting2, InputType.TYPE_CLASS_NUMBER),
-            addSetting(R.string.reportSetting3, InputType.TYPE_CLASS_NUMBER)
-        });
-
+        setInitialValues();
     }
-    private void setInitialValues(EditText[] editTexts){
-        for (int i = 0; i < editTexts.length; i++) {
-            editTexts[i].setText(String.valueOf(sharedPrefernceManager.getValue(settingKeys[i])));
-        }
+
+    private void setInitialValues() {
+        ((EditText) findViewById(R.id.setting_speed_threshold)).setText(String.valueOf(sharedPrefernceManager.getValue(R.string.maxSpeedThreshold)));
+        int time = (int) sharedPrefernceManager.getValue(R.string.maxWaitingTime);
+        boolean isShowingOpenAppButton = ((int) sharedPrefernceManager.getValue(R.string.isShowingOpenAppButton)) == 1;
+        ((EditText) findViewById(R.id.setting_waiting_time_threshold_min)).setText(String.valueOf(time / 60));
+        ((EditText) findViewById(R.id.setting_waiting_time_threshold_sec)).setText(String.valueOf(time % 60));
+        ((Switch) findViewById(R.id.setting_enabilityOpenAppButton)).setChecked(isShowingOpenAppButton);
     }
     public void saveSettings(View view){
-        View child;
-        EditText editText;
-        int editControlIndex=0;
-        for (int i = 0; i < settingContainer.getChildCount(); i++) {
-            if((child=settingContainer.getChildAt(i)) instanceof LinearLayout) {
-                editText = child.findViewById(R.id.settingTextField);
-                sharedPrefernceManager.setValue(settingKeys[editControlIndex],editText.getText().toString());
-                editControlIndex++;
-            }
+        String mins = ((EditText) findViewById(R.id.setting_waiting_time_threshold_min)).getText().toString(),
+                secs = ((EditText) findViewById(R.id.setting_waiting_time_threshold_sec)).getText().toString(),
+                speedThreshold = ((EditText) findViewById(R.id.setting_speed_threshold)).getText().toString();
+        if (mins.length() == 0 ||
+                secs.length() == 0 ||
+                speedThreshold.length() == 0) {
+            Toast.makeText(this, "Some fields are empty", Toast.LENGTH_SHORT).show();
+            return;
         }
+        int min, sec;
+        min = Integer.parseInt(mins);
+        sec = Integer.parseInt(secs);
+        if (sec > 59) {
+            Toast.makeText(this, "Enter seconds between 0 and 59", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        boolean isShowingOpenAppButton = ((Switch) findViewById(R.id.setting_enabilityOpenAppButton)).isChecked();
+        sharedPrefernceManager.setValue(R.string.maxWaitingTime, (min * 60) + sec);
+        sharedPrefernceManager.setValue(R.string.maxSpeedThreshold, speedThreshold);
+        sharedPrefernceManager.setValue(R.string.isShowingOpenAppButton, isShowingOpenAppButton ? 1 : 0);
+        setResult(MainActivity.SettingResultRequestCode, new Intent()
+                .putExtra("isShowingOpenAppButton", isShowingOpenAppButton));
         Toast.makeText(this, "saved settings", Toast.LENGTH_SHORT).show();
     }
-    private void addSettingTitle(String label){
-        TextView txt=(TextView) getLayoutInflater().inflate(R.layout.setting_group_title,null);
-        txt.setText(label);
-        settingContainer.addView(txt);
-    }
-    private EditText addSetting(int label,int filedType){
-        ViewGroup viewGroup = (ViewGroup) getLayoutInflater().inflate(R.layout.typical_setting_textfield,null);
-        ((TextView)viewGroup.findViewById(R.id.settingLabel)).setText(getString(label));
-        EditText editText= viewGroup.findViewById(R.id.settingTextField);
-        editText.setInputType(filedType);
-        settingContainer.addView(viewGroup);
-        return editText;
-    }
+
 }

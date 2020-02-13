@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:maxWidth="200dp"
+    android:layout_height="wrap_content"
+    android:background="@color/appTheme"
+    android:orientation="vertical"
+    android:padding="15dp">
+
+    <TextView
+        android:id="@+id/help_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:paddingBottom="15dp"
+        android:text="heloworld"
+        android:textColor="@android:color/white" />
+
+    <TextView
+        android:id="@+id/next_guide_pop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:text="Next"
+        android:textColor="@android:color/white"
+        android:textStyle="bold" />
+</LinearLayout>
+

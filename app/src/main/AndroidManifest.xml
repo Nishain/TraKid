@@ -8,6 +8,8 @@
          Google Maps Android API v2, but you must specify either coarse or fine
          location permissions for the 'MyLocation' functionality.
     -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
@@ -15,9 +17,9 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/app_logo"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@drawable/app_logo"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
@@ -35,7 +37,7 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name=".MapsActivity"
+            android:name=".SignInActivity"
             android:label="@string/title_activity_maps">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -52,10 +54,7 @@
             </intent-filter>
         </receiver>
 
-        <activity
-            android:name=".SOSPage"
-            android:showWhenLocked="true"
-            android:turnScreenOn="true" />
+
 
         <receiver
             android:name=".SMSBroadcastReciever"
@@ -66,8 +65,11 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name=".ReportPage"
-            android:theme="@style/appBlueTheme"/>
+        <activity
+            android:name=".SOSPage"
+            android:showWhenLocked="true"
+            android:turnScreenOn="true" />
+        <activity android:name=".MainActivity" />
         <activity android:name=".HomeSettings"
             android:theme="@style/appBlueTheme"/>
     </application>

@@ -9,6 +9,7 @@ import android.text.TextUtils;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 public class SQLIteLocationDataHandler implements SQLiteDbStructure {
     private final SQLiteDatabase db;
@@ -42,18 +43,27 @@ public class SQLIteLocationDataHandler implements SQLiteDbStructure {
         return nextTimestamp;
     }
 
-    public Cursor getCursor() {
-        locationInfoCursor = db.rawQuery(String.format("select %s,%s,%s from %s",
+    public void deletePaircode(String pairCode) {
+        db.execSQL(String.format("DELETE FROM %s where %s='%s';",
+                trackingInfoTableName, PairCodeColunm.split(" ")[0], pairCode));
+    }
+
+    public Cursor getCursor(String pairCode) {
+        locationInfoCursor = db.rawQuery(String.format("select %s,%s,%s from %s where %s='%s'",
                 LatitudeColumn.split(" ")[0],
                 LongitudeColumn.split(" ")[0],
                 TimestampColumn.split(" ")[0],
-                trackingInfoTableName), null);
+                trackingInfoTableName,
+                PairCodeColunm.split(" ")[0],
+                pairCode
+        ), null);
         return locationInfoCursor;
     }
 
 
     public ArrayList<LatLng> getCoordinateSubList(int start, int end) {
         ArrayList<LatLng> a = new ArrayList<>();
+        int initialPosition = locationInfoCursor.getPosition();
         locationInfoCursor.moveToPosition(start);
         int count = start;
         while (count <= end) {
@@ -61,6 +71,7 @@ public class SQLIteLocationDataHandler implements SQLiteDbStructure {
             locationInfoCursor.moveToNext();
             ++count;
         }
+        locationInfoCursor.moveToPosition(initialPosition);
         return a;
     }
 
@@ -68,12 +79,25 @@ public class SQLIteLocationDataHandler implements SQLiteDbStructure {
         db.execSQL("DELETE FROM " + trackingInfoTableName + ";");
     }
 
-    public void insertNewCoordinateInfo(double Lat, double Long, int timestamp) {
+    public boolean insertNewCoordinateInfo(double Lat, double Long, int timestamp, String paircode) {
+        getCursor(paircode);
+        if (locationInfoCursor.getCount() > 0) {
+            int position = locationInfoCursor.getPosition();
+            locationInfoCursor.moveToLast();
+            if (locationInfoCursor.getDouble(0) == Lat
+                    && locationInfoCursor.getDouble(1) == Long) {
+                locationInfoCursor.moveToPosition(position);
+                return false;//avoid duplicate coordinate inserting to database.
+            }
+            locationInfoCursor.moveToPosition(position);
+        }
         ContentValues contentValues = new ContentValues();
         contentValues.put(LatitudeColumn.split(" ")[0], Lat);
         contentValues.put(LongitudeColumn.split(" ")[0], Long);
         contentValues.put(TimestampColumn.split(" ")[0], timestamp);
+        contentValues.put(PairCodeColunm.split(" ")[0], paircode);
         db.insert(trackingInfoTableName, null, contentValues);
+        return true;
     }
 
     @Override
@@ -86,5 +110,12 @@ public class SQLIteLocationDataHandler implements SQLiteDbStructure {
         int previousTimestamp = locationInfoCursor.getInt(2);
         locationInfoCursor.moveToNext();
         return previousTimestamp;
+    }
+
+    public LatLng getPreviousCoordinate() {
+        locationInfoCursor.moveToPrevious();
+        LatLng previousLocation = new LatLng(locationInfoCursor.getDouble(0), locationInfoCursor.getDouble(1));
+        locationInfoCursor.moveToNext();
+        return previousLocation;
     }
 }

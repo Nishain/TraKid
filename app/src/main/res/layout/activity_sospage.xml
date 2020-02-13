@@ -43,6 +43,16 @@
             android:background="@drawable/white_bubble"
             app:srcCompat="@drawable/sos" />
 
+        <TextView
+            android:id="@+id/sos_time_gap_lbl"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:text="TextView"
+            android:textColor="@android:color/white"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
         <Button
             android:id="@+id/button"
             android:layout_width="wrap_content"
@@ -50,6 +60,7 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="20dp"
             android:background="@drawable/sos_show_location_btn"
+            android:onClick="openApp"
             android:padding="12dp"
             android:text="show Location"
             android:textColor="@android:color/holo_red_light" />

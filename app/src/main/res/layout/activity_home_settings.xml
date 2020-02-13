@@ -16,19 +16,103 @@
         android:textSize="24dp" />
 
     <LinearLayout
-        android:id="@+id/settings_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="2">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="72dp"
+                android:layout_weight="1"
+                android:text="@string/reportSetting2" />
+
+            <EditText
+                android:id="@+id/setting_waiting_time_threshold_min"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10"
+                android:inputType="number" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Min" />
+
+            <EditText
+                android:id="@+id/setting_waiting_time_threshold_sec"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="3"
+                android:inputType="number" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sec" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="2">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="78dp"
+                android:layout_weight="1"
+                android:text="@string/reportSetting1" />
+
+            <EditText
+                android:id="@+id/setting_speed_threshold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="12"
+                android:inputType="number" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="m/s" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:weightSum="2">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="78dp"
+                android:layout_weight="1"
+                android:text="@string/Setting3" />
+
+            <Switch
+                android:id="@+id/setting_enabilityOpenAppButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="12"
+                android:inputType="number" />
+        </TableRow>
+
     </LinearLayout>
+
     <Button
         android:id="@+id/saveSettingBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="right|bottom"
-        android:background="@drawable/transparent_round_btn"
-        android:textColor="@android:color/white"
+        android:background="@color/appThemeDark"
+        android:onClick="saveSettings"
         android:text="Save"
-        android:onClick="saveSettings"/>
+        android:textColor="@android:color/white" />
 </LinearLayout>

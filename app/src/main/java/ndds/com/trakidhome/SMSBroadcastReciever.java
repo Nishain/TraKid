@@ -17,7 +17,6 @@ public class SMSBroadcastReciever extends BroadcastReceiver {
         Cursor cursor = new SQLiteChildDataHandler(context).getCursor();
         boolean isPhonenumberMatching = false;
         String childName = null;
-        Log.i("sos", "child phonenumber : " + originatingAddress);
         while (cursor.moveToNext()) {
             if (originatingAddress.contains("+94" + cursor.getString(2).substring(1))) {
                 isPhonenumberMatching = true;

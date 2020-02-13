@@ -1,14 +1,37 @@
 <resources>
-    <string name="app_name">TraKid Home</string>
+    <string name="app_name">TraKid</string>
     <string name="sharedPreferenceName">settingsParameters</string>
     <string name="no_internet_message">No Internet connectivity but you will receive SOS calls</string>
     <string name="title_activity_maps">Map</string>
-    <string name="reportSetting1">The maximum speed which target will travel which will be considered into the report.</string>
-    <string name="reportSetting2">Number of times target continue on this speed before add it to report.</string>
-    <string name="reportSetting3">maximum wait time before adding to report</string>
-    <string name="maxSpeedThreshold">maxSpeedThreshold,f,15</string>
-    <string name="minWaitingTime">minWaitingTime,i,2</string>
-    <string name="minFrequencyInHighSpeed">minFrequencyInHighSpeed,i,1</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="reportSetting1">when user travel this speed onwards
+    inform me in the reports
+    </string>
+    <string name="reportSetting2">After user wait this amount of time
+    inform me in the report</string>
+    <string name="Setting3">Enable \'open app button\' instead
+    of just showing coordinate</string>
+    <string name="maxSpeedThreshold">maxSpeedThreshold,f,5</string>
+    <string name="maxWaitingTime">minWaitingTime,i,60</string>
+    <string name="isShowingOpenAppButton">isShowingOpenAppButton,i,1</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_map_view">Map</string>
+    <string name="no_default_child_text">Select a child from top slider or add your first child from the selection slider above</string>
+    <string-array name="help_tour">
+        <item>On bottom navigation show 3 quick action buttons</item>
+        <item>Refresh button refresh remake the activity report and
+            display the information into map</item>
+        <item>You can view activity of your child by analyzing the available coordinates</item>
+        <item>Long press and open the most recent child\'s coordination on apps like Google,Uber.etc</item>
+        <item>You can move the map to your own location and check where you are now</item>
+        <item>You can conveniently move the map to active child current location</item>
+        <item>the box shows the legend map</item>
+        <item>you can select child or add child.Long press to view child info</item>
+        <item>You can swipe to right from corner to open navigation and access
+        other function.You can also reassign the missing permissions from there</item>
+    </string-array>
 </resources>
