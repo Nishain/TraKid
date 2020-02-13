@@ -3,6 +3,7 @@ package ndds.com.trakidhome;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.fenchtose.tooltip.Tooltip;
@@ -55,8 +56,10 @@ public class HelpGuider {
         contentView.findViewById(R.id.next_guide_pop).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (currentTourIndex == (tour.length - 1))
+                if (currentTourIndex == (tour.length - 1)) {
                     ((TextView) v).setText("Finish");
+                    ((LinearLayout.LayoutParams) v.getLayoutParams()).gravity = LEFT;
+                }
                 popHelp();
             }
         });

@@ -24,6 +24,8 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.Uri;
@@ -37,6 +39,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Animation;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -67,6 +70,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -139,6 +143,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         String username = (String) getIntent().getExtras().get(EXTRA_USERNAME);
         String email = (String) getIntent().getExtras().get(EXTRA_EMAIL);
         String url = (String) getIntent().getExtras().get(EXTRA_URL);
@@ -458,8 +463,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         if (id == R.id.notification) {
             // Handle the camera action
-        } else if (id == R.id.help) {
-
         } else if (id == R.id.settings) {
             showSettings();
         } else if (id == R.id.truncateTable) {
@@ -620,6 +623,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             if (previousMarker != null)
                 previousMarker.remove();
         previousMarker = mMap.addMarker(currentMarker = new MarkerOptions().icon(BitmapDescriptorFactory.fromResource(R.drawable.baseline_emoji)).position(currentLocation));
+        Geocoder geocoder = new Geocoder(this);
+        TextView addressText = findViewById(R.id.current_location_adress_txt);
+        try {
+            Address address = geocoder.getFromLocation(lat, lon, 1).get(0);
+            if (address.getMaxAddressLineIndex() > -1)
+                addressText.setText(address.getAddressLine(0));
+        } catch (IOException e) {
+            addressText.setText("Awaiting");
+        }
         fullyLoadedState.setData(paircode);
         fullyLoadedState.setB(true);
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, preferedZoom));

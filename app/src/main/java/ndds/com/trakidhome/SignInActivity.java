@@ -37,7 +37,6 @@ public class SignInActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private SharedPrefernceManager sharedPrefernceManager;
     private static final String TAG = "GoogleActivity";
-
     String username, email;
     String personPhoto;
 
@@ -97,11 +96,12 @@ public class SignInActivity extends AppCompatActivity {
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser != null)
-            ;
-        updateUI(currentUser);
+            updateUI(currentUser);
+
     }
 
     private void signInWithGoogle() {
+        mGoogleSignInClient.signOut();
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
 
@@ -114,6 +114,7 @@ public class SignInActivity extends AppCompatActivity {
             Toast.makeText(this, "please check some of the fields are empty", Toast.LENGTH_SHORT).show();
             return;
         }
+        findViewById(R.id.login_loading_progress).setVisibility(View.VISIBLE);
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -122,6 +123,7 @@ public class SignInActivity extends AppCompatActivity {
                             updateUI(mAuth.getCurrentUser());
                         else
                             Toast.makeText(SignInActivity.this, "You are unauthorized!", Toast.LENGTH_SHORT).show();
+                        findViewById(R.id.login_loading_progress).setVisibility(View.GONE);
                     }
                 });
     }
@@ -183,7 +185,6 @@ public class SignInActivity extends AppCompatActivity {
 
 
     private void updateUI(FirebaseUser user) {
-
         if (user == null)
             return;
         username = user.getDisplayName();
