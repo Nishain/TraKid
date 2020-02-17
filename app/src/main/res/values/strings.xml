@@ -2,24 +2,20 @@
     <string name="app_name">TraKid</string>
     <string name="sharedPreferenceName">settingsParameters</string>
     <string name="no_internet_message">No Internet connectivity but you will receive SOS calls</string>
-    <string name="title_activity_maps">Map</string>
-    <string name="reportSetting1">when user travel this speed onwards
-    inform me in the reports
+    <string name="reportSetting1">when my child travel beyond this speed
+        consider to add it on report
     </string>
-    <string name="reportSetting2">After user wait this amount of time
+    <string name="reportSetting2">After my child wait this amount of time
     inform me in the report</string>
-    <string name="Setting3">Enable \'open app button\' instead
-    of just showing coordinate</string>
+    <string name="reportSetting3">If my child travel beyond this distance at higher speed
+    consider to add it on report</string>
     <string name="maxSpeedThreshold">maxSpeedThreshold,f,5</string>
     <string name="maxWaitingTime">minWaitingTime,i,60</string>
+    <string name="maxDistanceInHighSpeed">maxDistanceInHighSpeed,i,10</string>
     <string name="isShowingOpenAppButton">isShowingOpenAppButton,i,1</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">Android Studio</string>
-    <string name="nav_header_subtitle">android.studio@android.com</string>
-    <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
-    <string name="title_activity_map_view">Map</string>
     <string name="no_default_child_text">Select a child from top slider or add your first child from the selection slider above</string>
     <string-array name="help_tour">
         <item>On bottom navigation show 3 quick action buttons</item>
@@ -28,6 +24,8 @@
         <item>You can view activity of your child by analyzing the available coordinates</item>
         <item>Long press and open the most recent child\'s coordination on apps like Google,Uber.etc</item>
         <item>You can move the map to your own location and check where you are now</item>
+        <item>You can see the address of the child\'s location with latitude and longitude.Click on this
+            to copy the coordinate to the clipboard</item>
         <item>You can conveniently move the map to active child current location</item>
         <item>the box shows the legend map</item>
         <item>you can select child or add child.Long press to view child info</item>

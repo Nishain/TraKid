@@ -7,12 +7,14 @@ import android.content.DialogInterface;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.service.autofill.RegexValidator;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -28,6 +30,10 @@ public abstract class ChildHandler {
     private String UID;
     private Context context;
     private SQLiteChildDataHandler childData;
+
+    /*The variable 'stateObject' listen for two states.when both boolean states turn true
+     * then a abstract callback triggered indicating both children loaded and a defualt pair code
+     * available and default pair code is retrieved from firebase database*/
     private StateObject stateObject = new StateObject() {
         @Override
         void onBothConditionStatisfied() {
@@ -35,8 +41,9 @@ public abstract class ChildHandler {
             if (stateObject.getData() != null) {
                 int positionOfDefaultPairCode = childData.getPositionOfPairCode((String) stateObject.getData());
                 //set first focus element
-                ((ChildListAdapter) ((RecyclerView) ((Activity) context).findViewById(R.id.childSelector)).getAdapter())
-                        .forceFocusItem(positionOfDefaultPairCode);
+                if (positionOfDefaultPairCode != -1)
+                    ((ChildListAdapter) ((RecyclerView) ((Activity) context).findViewById(R.id.childSelector)).getAdapter())
+                            .forceFocusItem(positionOfDefaultPairCode);
             }
         }
     };
@@ -251,6 +258,8 @@ public abstract class ChildHandler {
                 String firstName = ((EditText) viewGroup.findViewById(R.id.new_child_firstName)).getText().toString();
                 if (paircode.length() == 0 || firstName.length() == 0)
                     Toast.makeText(context, "Some of the fields are empty", Toast.LENGTH_SHORT).show();
+                else if (!firstName.matches("[a-zA-Z]+"))
+                    Toast.makeText(context, "First name can only hava alphabets", Toast.LENGTH_SHORT).show();
                 else
                     addChild(paircode, firstName, dialog);
             }

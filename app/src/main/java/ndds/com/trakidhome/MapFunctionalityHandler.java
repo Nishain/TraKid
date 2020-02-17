@@ -10,6 +10,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
@@ -24,12 +25,12 @@ public class MapFunctionalityHandler {
     private SQLIteLocationDataHandler data;
     private GoogleMap map;
     private int lightColor, normalColor, darkColor;
-    private int maximumWaitTime;
+    private int maximumWaitTime, maxDistanceInHighSpeed;
     private float maximumSpeedTolerance;
     private Context context;
     private float negletableDistanceThreshold = 3;
     private String paircode;
-    MapFunctionalityHandler hibernateObject;
+    private Marker addedMarker;
 
     public MapFunctionalityHandler(GoogleMap map, Context context, String paircode) {
         this.map = map;
@@ -44,6 +45,7 @@ public class MapFunctionalityHandler {
         SharedPrefernceManager sharedPrefernceManager = new SharedPrefernceManager(context);
         maximumSpeedTolerance = (float) sharedPrefernceManager.getValue(R.string.maxSpeedThreshold);
         maximumWaitTime = (int) sharedPrefernceManager.getValue(R.string.maxWaitingTime);
+        maxDistanceInHighSpeed = (int) sharedPrefernceManager.getValue(R.string.maxDistanceInHighSpeed);
     }
 
     public MapFunctionalityHandler setColors() {
@@ -61,7 +63,13 @@ public class MapFunctionalityHandler {
                     data.getPreviousCoordinate(),
                     data.getCurrentCoordinate()
             ).color(darkColor));
+            if (addedMarker != null)
+                addedMarker.setVisible(true);
+            addedMarker = drawNormalMarker(data.getCurrentCoordinate(), data.getCurrentTimeStamp());
+            addedMarker.setVisible(false);
         }
+
+
     }
 
     public static float distanceMoved(LatLng a, LatLng b) {
@@ -98,6 +106,8 @@ public class MapFunctionalityHandler {
         int positionIndexOfHighSpeed = 0;
         int highSpeedFrequency = 0;
         int distance = 0;
+        Marker waitedMarker = null;
+        ArrayList<MarkerOptions> pendingCoordinates = new ArrayList<>();
         Geocoder geocoder = new Geocoder(context);
 
         setConstantParams();
@@ -113,6 +123,7 @@ public class MapFunctionalityHandler {
             isBeforeLast = !LI.isLast();
             currentCoordinate = data.getCurrentCoordinate();
             currentTimestamp = data.getCurrentTimeStamp();
+
             if (isBeforeLast) {
                 nextCoordinate = data.getNextCoordinate();
                 nextTimestamp = data.getNextTimestamp();
@@ -132,11 +143,22 @@ public class MapFunctionalityHandler {
             if (!isWaiting) {
                 firstWaitingCoordinate = currentCoordinate;
                 firstTimestampOfWaiting = currentTimestamp;
+                if (isBeforeLast)
+                    waitedMarker = drawNormalMarker(currentCoordinate, currentTimestamp);
+                if (pendingCoordinates.size() > 0) {
+                    for (MarkerOptions pendingCoordinate : pendingCoordinates) {
+                        map.addMarker(pendingCoordinate);
+                    }
+                }
+            } else {
+                pendingCoordinates.add(
+                        createMarker(currentCoordinate, currentTimestamp)
+                );
             }
             b = isBeforeLast && distanceMoved(firstWaitingCoordinate, nextCoordinate) < negletableDistanceThreshold;
             if (b)
                 isWaiting = true;
-            if (!a && highSpeedFrequency > 0 && distance > 10) {
+            if (!a && highSpeedFrequency > 0 && distance > maxDistanceInHighSpeed) {
                 map.addPolyline(new PolylineOptions().color(lightColor)
                         .addAll(data.getCoordinateSubList(positionIndexOfHighSpeed, LI.getPosition())));
                 String location = getLocationAddress(currentCoordinate, geocoder);
@@ -155,6 +177,7 @@ public class MapFunctionalityHandler {
                 distance = 0;
             }
             if (!b && isWaiting && (currentTimestamp - firstTimestampOfWaiting) >= maximumWaitTime) {
+                pendingCoordinates.clear();
                 String location = getLocationAddress(firstWaitingCoordinate, geocoder);
                 report.add(String.format(
                         "At %s user waited for %s until %s %s",
@@ -163,7 +186,7 @@ public class MapFunctionalityHandler {
                         timestampInReadableText(currentTimestamp, false),
                         location == null ? "" : ("at " + location + " ")
                 ));
-                drawWaitCircle(firstWaitingCoordinate);
+                drawWaitCircle(firstWaitingCoordinate, waitedMarker, currentTimestamp - firstTimestampOfWaiting);
                 firstWaitingCoordinate = null;
             }
             if (!b)
@@ -172,7 +195,7 @@ public class MapFunctionalityHandler {
         return report;
     }
 
-    public void drawWaitCircle(LatLng position) {
+    public void drawWaitCircle(LatLng position, Marker marker, int waitedTime) {
         map.addCircle(new CircleOptions()
                 .fillColor(ColorUtils.setAlphaComponent(normalColor, 100))
                 .radius(negletableDistanceThreshold)
@@ -180,21 +203,44 @@ public class MapFunctionalityHandler {
                 .strokeWidth(1)
                 .strokeColor(normalColor)
         );
-        map.addMarker(new MarkerOptions().
-                icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+        marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+        marker.setTitle(marker.getTitle());
+        marker.setSnippet("waited for " + timestampInReadableText(waitedTime, true));
+    }
+
+    private Marker drawNormalMarker(LatLng position, int timestamp) {
+        return map.addMarker(new MarkerOptions()
+                .title("Time: " + timestampInReadableText(timestamp, false))
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN))
                 .position(position));
     }
 
+    private MarkerOptions createMarker(LatLng position, int timestamp) {
+        return new MarkerOptions()
+                .title(timestampInReadableText(timestamp, false))
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN))
+                .position(position);
+    }
     private String timestampInReadableText(int timestamp, boolean isShowingTimeGap) {
-        int mins = timestamp / 60;
-        if (isShowingTimeGap)
-            return (timestamp > 59 ? mins + " mins and " : "") + (timestamp % 60) + " seconds";
+        int mins = (timestamp % (60 * 60)) / 60;
+        int hours = timestamp / (60 * 60);
+        int seconds = timestamp % 60;
+        String timeGap = "";
+        if (isShowingTimeGap) {
+            if (hours > 0)
+                timeGap += hours + " h ";
+            if (mins > 0)
+                timeGap += mins + " min ";
+            if (seconds > 0)
+                timeGap += seconds + " sec";
+            return timeGap.trim();
+        }
         else {
-            int hours = timestamp / (60 * 60);
+
             if (hours > 12)
                 hours -= 12;
             String sessionPrefix = (timestamp / (60 * 60)) > 12 ? "PM" : "AM";
-            return hours + ":" + (timestamp % (60 * 60)) / 60 + " " + sessionPrefix;
+            return hours + ":" + mins + " " + sessionPrefix;
         }
 
     }

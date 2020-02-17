@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorAccent"
+    android:background="@color/appThemeError"
     tools:context=".SOSPage">
 
     <com.skyfishjy.library.RippleBackground
@@ -13,10 +13,10 @@
         android:layout_height="match_parent"
         android:layout_gravity="center"
         app:rb_color="@android:color/white"
-        app:rb_strokeWidth="16dp"
-        app:rb_type="strokeRipple"
         app:rb_duration="6000"
-        app:rb_rippleAmount="12">
+        app:rb_rippleAmount="12"
+        app:rb_strokeWidth="16dp"
+        app:rb_type="strokeRipple">
 
     </com.skyfishjy.library.RippleBackground>
 

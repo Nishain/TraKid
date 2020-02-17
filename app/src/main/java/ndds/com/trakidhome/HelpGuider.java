@@ -21,15 +21,7 @@ public class HelpGuider {
     int currentTourIndex = 0;
     private MainActivity mainActivity;
     private String[] tour;
-    int[] directions = new int[]{
-            TOP,
-            TOP,
-            TOP,
-            TOP,
-            LEFT,
-            BOTTOM, RIGHT, BOTTOM,
-            RIGHT
-    };
+
     int[] widgets = new int[]{
             R.id.bottom_options,
             R.id.bottom_options,
@@ -37,10 +29,10 @@ public class HelpGuider {
             R.id.coordinate_aid,
             Integer.MIN_VALUE,
             R.id.find_child_location,
+            R.id.distance_user_txt,
             R.id.mapLegendContainer,
             R.id.childSelector,
             R.id.nav_view
-
 
     };
     private Tooltip tooltip;

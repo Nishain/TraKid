@@ -13,23 +13,21 @@ public class SMSBroadcastReciever extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         Object[] pdus=(Object[])intent.getExtras().get("pdus");
         SmsMessage smsMessage=SmsMessage.createFromPdu((byte[]) pdus[pdus.length-1]);
-        String originatingAddress = smsMessage.getOriginatingAddress();
-        Cursor cursor = new SQLiteChildDataHandler(context).getCursor();
-        boolean isPhonenumberMatching = false;
-        String childName = null;
-        while (cursor.moveToNext()) {
-            if (originatingAddress.contains("+94" + cursor.getString(2).substring(1))) {
-                isPhonenumberMatching = true;
-                childName = cursor.getString(1);
-            }
+        String message = smsMessage.getMessageBody();
+        SQLiteChildDataHandler DB = new SQLiteChildDataHandler(context);
+
+        String childName;
+        if (message.contains("Please find me. I am in danger-")) {
+            String paircode = message.substring(message.indexOf("-") + 1);
+            childName = DB.getTitleFromPairCode(paircode);
+            if (childName == null)
+                return;
+            Intent i = new Intent(context, SOSPage.class).
+                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK |
+                            Intent.FLAG_ACTIVITY_CLEAR_TOP |
+                            Intent.FLAG_ACTIVITY_NEW_TASK).
+                    putExtra("name", childName);
+            context.startActivity(i);
         }
-        if (!isPhonenumberMatching)
-            return;
-        Intent i=new Intent(context,SOSPage.class).
-                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK |
-                        Intent.FLAG_ACTIVITY_CLEAR_TOP |
-                        Intent.FLAG_ACTIVITY_NEW_TASK).
-                putExtra("name", childName);
-        context.startActivity(i);
     }
 }

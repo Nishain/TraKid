@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -115,6 +116,14 @@ public class SignInActivity extends AppCompatActivity {
             return;
         }
         findViewById(R.id.login_loading_progress).setVisibility(View.VISIBLE);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                //if the curtain doesn't disappear after long time.
+                if (findViewById(R.id.login_loading_progress).getVisibility() == View.VISIBLE)
+                    findViewById(R.id.login_loading_progress).setVisibility(View.GONE);
+            }
+        }, 8000);
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override

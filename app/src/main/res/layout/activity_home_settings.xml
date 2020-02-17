@@ -58,10 +58,9 @@
                 android:layout_height="wrap_content"
                 android:text="Sec" />
         </TableRow>
-
         <TableRow
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:weightSum="2">
 
             <TextView
@@ -83,36 +82,57 @@
                 android:layout_height="wrap_content"
                 android:text="m/s" />
         </TableRow>
-
         <TableRow
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:weightSum="2">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="78dp"
                 android:layout_weight="1"
-                android:text="@string/Setting3" />
+                android:text="@string/reportSetting3" />
 
-            <Switch
-                android:id="@+id/setting_enabilityOpenAppButton"
+            <EditText
+                android:id="@+id/setting_max_distanceInHighSpeed"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:ems="12"
                 android:inputType="number" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="m/s" />
         </TableRow>
+
 
     </LinearLayout>
 
-    <Button
-        android:id="@+id/saveSettingBtn"
+    <TableRow
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="right|bottom"
-        android:background="@color/appThemeDark"
-        android:onClick="saveSettings"
-        android:text="Save"
-        android:textColor="@android:color/white" />
+        android:layout_gravity="right">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right|bottom"
+            android:layout_marginRight="10dp"
+            android:background="@color/appThemeDark"
+            android:onClick="cancelSettings"
+            android:text="Cancel"
+            android:textColor="@android:color/white" />
+
+        <Button
+            android:id="@+id/saveSettingBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right|bottom"
+            android:background="@color/appThemeDark"
+            android:onClick="saveSettings"
+            android:text="Save"
+            android:textColor="@android:color/white" />
+    </TableRow>
 </LinearLayout>

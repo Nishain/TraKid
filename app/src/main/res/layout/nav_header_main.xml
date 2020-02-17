@@ -2,8 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="@dimen/nav_header_height"
+    android:background="@drawable/navigation_header_bg"
     android:gravity="bottom"
-    android:background="@color/appTheme"
     android:orientation="vertical"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
@@ -23,15 +23,22 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
-        android:text=""
-        android:textColor="#fff"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+        android:shadowColor="@android:color/black"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        android:shadowRadius="7"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textColor="#fff" />
 
     <TextView
         android:id="@+id/txt_email"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="#fff"
-        android:text="" />
+        android:shadowColor="@android:color/black"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        android:shadowRadius="7"
+        android:text=""
+        android:textColor="#fff" />
 
 </LinearLayout>

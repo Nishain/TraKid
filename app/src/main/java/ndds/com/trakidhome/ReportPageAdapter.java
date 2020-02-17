@@ -24,7 +24,9 @@ public class ReportPageAdapter extends PagerAdapter {
 
     @Override
     public int getCount() {
-        return reportFragments.size();
+        /*For each page in reports, only display maximum 3
+         * reporting details*/
+        return (reportFragments.size() / 3) + (reportFragments.size() % 3 > 0 ? 1 : 0);
     }
 
     @NonNull
@@ -34,7 +36,7 @@ public class ReportPageAdapter extends PagerAdapter {
         ((TextView) cardView.findViewById(R.id.single_report_txt)).setText(
                 TextUtils.join("\n", reportFragments.subList(position * 3, (position + 1) * 3 > reportFragments.size() ? reportFragments.size() : (position + 1) * 3))
         );
-        ((TextView) cardView.findViewById(R.id.report_page_no)).setText(String.valueOf((position + 1) + "/" + reportFragments.size() / 4) + " >");
+        ((TextView) cardView.findViewById(R.id.report_page_no)).setText(String.valueOf((position + 1) + "/" + getCount()) + " >");
         container.addView(cardView);
         return cardView;
     }

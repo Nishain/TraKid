@@ -8,15 +8,15 @@
             android:gravity="center"
             android:src="@drawable/app_logo" />
     </item>
-    <item android:width="30dp">
+    <item>
         <bitmap
             android:src="@drawable/splash_com1"
             android:gravity="bottom|left" />
     </item>
-    <item>
+    <item android:bottom="60dp">
         <bitmap
             android:src="@drawable/splash_com3"
-            android:gravity="bottom|clip_horizontal" />
+            android:gravity="bottom|center_horizontal" />
     </item>
     <item>
         <bitmap
