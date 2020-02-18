@@ -3,6 +3,7 @@ package ndds.com.trakidhome;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
@@ -293,6 +294,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    private void eraseMap() {
+        new AlertDialog.Builder(this).setMessage(getString(R.string.clearHistoryConfirmationMsg))
+                .setTitle("Confirmation")
+                .setPositiveButton("yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mMap.clear();
+                        if (mapFunctionHandler != null && currentMarker != null) {
+                            report.clear();
+                            mapFunctionHandler.clearPreviousCoordinate();
+                            previousMarker = mMap.addMarker(currentMarker);
+                        }
+                    }
+                }).setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        }).show();
+    }
     private boolean checkAndRequestPermissions() {
         /*this function automatically read the manifest file get the demanded permissions
          * and check each of those permission are granted by the user.
@@ -498,8 +519,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             // Handle the camera action
         } else if (id == R.id.settings) {
             showSettings();
-        } else if (id == R.id.truncateTable) {
-            locationDatabase.truncateTable();
+        } else if (id == R.id.clearHistory) {
+            eraseMap();
         } else if (id == R.id.logout) {
             logoutObject.signOut();
             /*remove the currently attached listener in the firebase and
@@ -602,7 +623,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        mMap.setMaxZoomPreference(preferedZoom);
         setMapListeners();
         //load the paircodes for the respective user from firebase
         loadChildren();

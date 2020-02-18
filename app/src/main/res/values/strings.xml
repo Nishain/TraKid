@@ -17,6 +17,7 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="action_settings">Settings</string>
     <string name="no_default_child_text">Select a child from top slider or add your first child from the selection slider above</string>
+    <string name="clearHistoryConfirmationMsg">Are you sure you want remove history of coordinates for this pair Code?Reports also will be removed</string>
     <string-array name="help_tour">
         <item>On bottom navigation show 3 quick action buttons</item>
         <item>Refresh button refresh remake the activity report and

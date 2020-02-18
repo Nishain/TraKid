@@ -4,6 +4,7 @@
     <color name="appThemeNormal">#1d98e6</color>
     <color name="appThemeDark">#144463</color>
     <color name="darkTransparent">#97144463</color>
+    <color name="backgroundSplash">#bcd6ed</color>
     <color name="appThemeLight">#8fd1fa</color>
     <color name="appThemeCyan">#16e4be</color>
     <color name="appThemeError">#ee2147</color>

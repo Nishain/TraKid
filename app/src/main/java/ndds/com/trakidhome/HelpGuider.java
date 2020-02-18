@@ -28,8 +28,8 @@ public class HelpGuider {
             R.id.bottom_options,
             R.id.coordinate_aid,
             Integer.MIN_VALUE,
+            R.id.coordinate_address_info_container,
             R.id.find_child_location,
-            R.id.distance_user_txt,
             R.id.mapLegendContainer,
             R.id.childSelector,
             R.id.nav_view

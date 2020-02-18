@@ -55,6 +55,10 @@ public class MapFunctionalityHandler {
         return this;
     }
 
+    public void clearPreviousCoordinate() {
+        data.deletePaircode(paircode);
+        map.clear();
+    }
     public void addSingleCoordinate() {
         Cursor LI = data.getCursor(paircode);
         if (LI.getCount() > 1) {

@@ -17,9 +17,9 @@
             android:title="Permissions"
             android:icon="@drawable/ic_permissions" />
         <item
-            android:id="@+id/truncateTable"
-            android:icon="@android:drawable/stat_sys_warning"
-            android:title="truncate Table" />
+            android:id="@+id/clearHistory"
+            android:icon="@android:drawable/ic_menu_recent_history"
+            android:title="clear history" />
         <item
             android:id="@+id/logout"
             android:icon="@drawable/ic_power_settings_new_black_24dp"
