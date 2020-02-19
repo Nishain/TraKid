@@ -25,8 +25,10 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Animation;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RatingBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -43,6 +45,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -51,6 +54,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
@@ -282,6 +286,39 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         checkAndRequestPermissions();
     }
 
+    private void showRatingPopup() {
+        ViewGroup v = (ViewGroup) getLayoutInflater().inflate(R.layout.add_ratings, null);
+        RatingBar ratingBar = ((RatingBar) v.findViewById(R.id.post_rating_bar));
+        ratingBar.setStepSize(1);
+        ratingBar.setMax(5);
+        final AlertDialog dialog = new AlertDialog.Builder(this).setView(v).create();
+        v.findViewById(R.id.postRatingBtn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                postRating(v, dialog);
+            }
+        });
+        dialog.show();
+    }
+
+    public void postRating(View v, final AlertDialog dialog) {
+        ViewGroup viewGroup = (ViewGroup) v.getParent();
+        String comment = ((EditText) viewGroup.findViewById(R.id.rating_review_editbox)).getText().toString();
+        int noOfRatings = (int) ((RatingBar) viewGroup.findViewById(R.id.post_rating_bar)).getRating();
+        HashMap<String, Object> postData = new HashMap<>();
+        postData.put("comments", comment);
+        postData.put("date", ServerValue.TIMESTAMP);
+        postData.put("name", userNameText.getText().toString());
+        postData.put("rate", String.valueOf(noOfRatings));
+        FirebaseDatabase.getInstance().getReference("CustomerRatings").push().setValue(postData)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Toast.makeText(MainActivity.this, "Thank you for your feedback!", Toast.LENGTH_SHORT).show();
+                        dialog.dismiss();
+                    }
+                });
+    }
     private void RefreshMapWithNewReport() {
         /*make sure Google map and variable 'mapFunctionHandler' is initialized
          * before continue.The map is cleared to erase the drawings by the previous report
@@ -515,12 +552,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         int id = item.getItemId();
 
-        if (id == R.id.notification) {
-            // Handle the camera action
-        } else if (id == R.id.settings) {
+        if (id == R.id.settings) {
             showSettings();
         } else if (id == R.id.clearHistory) {
             eraseMap();
+        } else if (id == R.id.add_rate) {
+            showRatingPopup();
         } else if (id == R.id.logout) {
             logoutObject.signOut();
             /*remove the currently attached listener in the firebase and

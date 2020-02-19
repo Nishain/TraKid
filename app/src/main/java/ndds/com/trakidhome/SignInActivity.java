@@ -31,6 +31,10 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class SignInActivity extends AppCompatActivity {
     private static final int RC_SIGN_IN = 9001;
@@ -67,10 +71,25 @@ public class SignInActivity extends AppCompatActivity {
     }
 
     public void openSignUpLink(View v) {
-        String url = "http://www.example.com";
-        Intent i = new Intent(Intent.ACTION_VIEW);
-        i.setData(Uri.parse(url));
-        startActivity(i);
+        FirebaseDatabase.getInstance().getReference("MobileConfig/webUrl").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                String url = (String) dataSnapshot.getValue();
+                if (url != null && !url.startsWith("http://") && !url.startsWith("https://")) {
+                    Toast.makeText(SignInActivity.this, "un-openable link", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setData(Uri.parse(url));
+                startActivity(i);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
     }
 
     public void forgotPassword(View v) {

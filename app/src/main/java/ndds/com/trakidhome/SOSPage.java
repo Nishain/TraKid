@@ -8,6 +8,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -40,6 +42,7 @@ public class SOSPage extends AppCompatActivity {
             handler.removeCallbacks(mRunnable);
         super.onDestroy();
     }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
